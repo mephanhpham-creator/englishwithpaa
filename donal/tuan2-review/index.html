@@ -1,0 +1,967 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Donal Food Week 2 Review</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;800&display=swap">
+<style>
+/* Layout: one full-screen TV stage per lesson step; teacher strip on top, big touch targets in the middle, notes + arrows at the bottom.
+   Kiddyland look (white page, bright dots and colour blobs, white cards with soft shadows, two-colour titles) on purpose
+   for the classroom TV, so colours are set explicitly, no dark variant. The theme block at the end of this style
+   overrides the original picnic values; --scene-photo can take a ChatGPT background later. */
+:root {
+  --bg: #9fcf5f;
+  --bg-deep: #7fb944;
+  --scene-photo: none;
+  --paper: #fff8e6;
+  --leaf: #6b4423;        /* outline brown */
+  --leaf-deep: #5a3a1e;   /* dark brown */
+  --ink: #4a2f17;
+  --ink-soft: #6b4f35;
+  --yes: #3fae55;
+  --no: #e8566b;
+  --sun: #ffc94a;
+  --gingham: rgba(245, 166, 35, 0.45);
+  --sky: #59b6e3;
+  --outline: 0.055em 0 0 var(--leaf-deep), -0.055em 0 0 var(--leaf-deep), 0 0.055em 0 var(--leaf-deep), 0 -0.055em 0 var(--leaf-deep),
+             0.04em 0.04em 0 var(--leaf-deep), -0.04em 0.04em 0 var(--leaf-deep), 0.04em -0.04em 0 var(--leaf-deep), -0.04em -0.04em 0 var(--leaf-deep),
+             0 0.1em 0 var(--leaf-deep);
+  --font-kid: "Sniglet", "Baloo 2", "Comic Sans MS", system-ui, sans-serif;
+  --font-ui: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: light;
+}
+html, body { height: 100%; }
+body {
+  background: var(--scene-photo) center / cover no-repeat, radial-gradient(ellipse at 50% 40%, #b9de7f 0%, var(--bg) 55%, var(--bg-deep) 100%);
+  background-color: var(--bg);
+  background-attachment: fixed;
+  color: var(--ink);
+  font-family: var(--font-ui);
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+}
+.app {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 0.6rem;
+  padding-block: 0.7rem;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  box-sizing: border-box;
+}
+
+/* ---------- teacher strip ---------- */
+.steps {
+  display: flex; gap: 0.4rem; overflow-x: auto; scrollbar-width: none;
+  align-items: center;
+}
+.steps::-webkit-scrollbar { display: none; }
+.step {
+  flex: none; border: 0; cursor: pointer;
+  font: 800 0.95rem/1 var(--font-ui);
+  color: var(--ink-soft); background: var(--paper);
+  padding: 0.55rem 0.85rem; border-radius: 999px;
+  box-shadow: inset 0 0 0 2px var(--leaf);
+}
+.step b { color: var(--leaf-deep); margin-right: 0.3rem; }
+.step[aria-current="true"] { background: var(--leaf-deep); color: var(--paper); box-shadow: none; }
+.step[aria-current="true"] b { color: var(--sun); }
+.tools { margin-left: auto; display: flex; gap: 0.4rem; flex: none; }
+.tool {
+  border: 0; cursor: pointer; background: var(--paper); color: var(--ink-soft);
+  font: 800 0.9rem/1 var(--font-ui); padding: 0.55rem 0.8rem; border-radius: 999px;
+  box-shadow: inset 0 0 0 2px var(--leaf);
+}
+.voice-warn {
+  flex: none; font: 700 0.85rem/1.2 var(--font-ui); color: var(--no);
+  background: #fde7ea; padding: 0.45rem 0.7rem; border-radius: 0.6rem;
+}
+
+/* ---------- stage ---------- */
+.stage { position: relative; min-height: 0; display: grid; }
+.scene {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: clamp(0.8rem, 2.4vh, 1.8rem); min-height: 0; text-align: center;
+}
+.scene[hidden] { display: none !important; }
+.big-title {
+  font: 800 clamp(2.4rem, 8vmin, 5.6rem)/1 var(--font-kid);
+  margin: 0; color: var(--paper); text-wrap: balance;
+  text-shadow: var(--outline);
+}
+.question {
+  font: 800 clamp(1.8rem, 6vmin, 4rem)/1.1 var(--font-kid); margin: 0; color: var(--paper);
+  text-shadow: var(--outline);
+}
+.row { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: clamp(0.8rem, 2.5vmin, 2rem); }
+
+/* Card: cream panel with a brown outline, like the picnic slide panels */
+.card {
+  --size: clamp(9rem, 26vmin, 17rem);
+  position: relative; cursor: pointer; padding: 0; overflow: hidden;
+  width: var(--size); aspect-ratio: 3 / 4; max-width: 100%;
+  background: var(--paper); border: 0.28rem solid var(--leaf); border-radius: 1.4rem;
+  box-shadow: 0 0.45rem 0 rgba(90, 58, 30, 0.35);
+  transition: transform 0.15s ease;
+  font-family: var(--font-kid);
+}
+.card:active { transform: scale(0.96); }
+.card:focus-visible, .step:focus-visible, .tool:focus-visible, .btn:focus-visible, .thumb:focus-visible, .nav:focus-visible { outline: 4px solid var(--sky); outline-offset: 4px; }
+.card .face {
+  height: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.6rem;
+  padding: 0.8rem; box-sizing: border-box;
+}
+.card img { width: 82%; height: 62%; object-fit: contain; pointer-events: none; }
+.card .word { font-size: calc(var(--size) * 0.15); color: var(--ink); line-height: 1; }
+.card.big { --size: clamp(11rem, 40vmin, 26rem); }
+.card.wide { aspect-ratio: 4 / 3; --size: clamp(14rem, 52vmin, 34rem); }
+
+/* face-down card for the review step: picnic-blanket gingham */
+.card .back {
+  height: 100%;
+  background:
+    repeating-linear-gradient(0deg, var(--gingham) 0 1.1rem, transparent 1.1rem 2.2rem),
+    repeating-linear-gradient(90deg, var(--gingham) 0 1.1rem, transparent 1.1rem 2.2rem),
+    #fff1c2;
+  display: grid; place-items: center; color: var(--paper);
+  font: 800 calc(var(--size) * 0.45)/1 var(--font-kid); text-shadow: var(--outline);
+}
+.card.flip { animation: flip 0.45s ease; }
+@keyframes flip { 0% { transform: rotateY(0) } 50% { transform: rotateY(90deg) } 100% { transform: rotateY(0) } }
+
+/* thumbs answers */
+.thumbs { display: flex; flex-wrap: wrap; justify-content: center; gap: clamp(1rem, 4vmin, 3.5rem); }
+.thumb {
+  border: 0.25rem solid var(--leaf-deep); cursor: pointer; color: #fff;
+  min-width: clamp(9rem, 26vmin, 17rem); padding: clamp(0.8rem, 2.4vmin, 1.4rem) 1.4rem;
+  border-radius: 2rem; display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
+  font: 800 clamp(1.3rem, 4.2vmin, 2.6rem)/1.05 var(--font-kid);
+  box-shadow: 0 0.45rem 0 rgba(0,0,0,0.18);
+  transition: transform 0.12s ease;
+}
+.thumb .icon { font-size: clamp(3rem, 11vmin, 7rem); line-height: 1; }
+.thumb.yes { background: var(--yes); }
+.thumb.no { background: var(--no); }
+.thumb:active { transform: translateY(0.3rem); box-shadow: 0 0.15rem 0 rgba(0,0,0,0.18); }
+
+.btn {
+  border: 0.2rem solid var(--leaf-deep); cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 0.6rem;
+  font: 800 clamp(1.2rem, 3.6vmin, 2.2rem)/1 var(--font-kid);
+  padding: 0.9rem 1.6rem; border-radius: 999px;
+  background: var(--sun); color: var(--ink);
+  box-shadow: 0 0.35rem 0 #d9a21f;
+}
+.btn:active { transform: translateY(0.25rem); box-shadow: 0 0.1rem 0 #d9a21f; }
+.btn.ghost { background: var(--paper); box-shadow: 0 0.35rem 0 rgba(90, 58, 30, 0.35); }
+.btn.speak { background: var(--sky); color: #fff; box-shadow: 0 0.35rem 0 #3a8fb8; }
+.btn[hidden] { display: none !important; }
+.picker { display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; }
+.picker .btn { font-size: clamp(1rem, 2.6vmin, 1.5rem); padding: 0.6rem 1.1rem; }
+.picker .btn[aria-pressed="true"] { background: var(--leaf-deep); color: var(--paper); box-shadow: 0 0.35rem 0 #3b2412; }
+
+/* hamster mascot */
+.mascot { height: clamp(7rem, 24vmin, 15rem); width: auto; animation: hello 1.8s ease-in-out infinite; transform-origin: 50% 100%; }
+@keyframes hello { 50% { transform: rotate(-5deg) translateY(-0.4rem); } }
+.cheer {
+  position: absolute; left: 50%; bottom: 0; width: clamp(9rem, 30vmin, 18rem);
+  animation: cheer 1.4s ease-out forwards;
+}
+@keyframes cheer {
+  0% { transform: translate(-50%, 100%); }
+  30% { transform: translate(-50%, -8%); }
+  45% { transform: translate(-50%, 0); }
+  80% { transform: translate(-50%, 0); opacity: 1; }
+  100% { transform: translate(-50%, 100%); opacity: 0; }
+}
+.toy-parade { display: flex; gap: clamp(0.5rem, 2vmin, 1.5rem); justify-content: center; flex-wrap: wrap; }
+.toy-parade img { height: clamp(4rem, 13vmin, 8.5rem); width: auto; animation: bob 1.6s ease-in-out infinite; }
+.toy-parade img:nth-child(2n) { animation-delay: -0.8s; }
+@keyframes bob { 50% { transform: translateY(-0.6rem) rotate(-3deg); } }
+
+/* game 1: mystery gift box */
+.giftzone { position: relative; width: clamp(12rem, 38vmin, 24rem); aspect-ratio: 1; max-width: 100%; }
+.gift {
+  position: absolute; inset: 0; border: 0; background: none; cursor: pointer; padding: 0;
+  animation: wiggle 2.4s ease-in-out infinite;
+}
+.gift:focus-visible { outline: 4px solid var(--sky); outline-offset: 6px; border-radius: 1rem; }
+.gift .box, .gift .lid {
+  position: absolute; border-radius: 0.7rem;
+  background: linear-gradient(90deg, transparent 43%, var(--sun) 43% 57%, transparent 57%), var(--no);
+}
+.gift .box { left: 10%; right: 10%; bottom: 2%; height: 58%; }
+.gift .lid { left: 4%; right: 4%; top: 26%; height: 17%; background-color: #d4415a; transition: transform 0.45s ease, opacity 0.45s ease; }
+.gift .lid::before, .gift .lid::after {
+  content: ""; position: absolute; bottom: 92%; width: 26%; height: 120%;
+  border: 0.7rem solid var(--sun); border-radius: 50% 50% 10% 50%; box-sizing: border-box;
+}
+.gift .lid::before { left: 24%; transform: rotate(-20deg); }
+.gift .lid::after { right: 24%; transform: scaleX(-1) rotate(-20deg); }
+.gift.shake { animation: shake 0.45s ease; }
+.gift.open { animation: none; cursor: default; }
+.gift.open .lid { transform: translate(-30%, -140%) rotate(-30deg); opacity: 0; }
+@keyframes wiggle { 0%, 70%, 100% { transform: rotate(0); } 76% { transform: rotate(-4deg); } 82% { transform: rotate(4deg); } 88% { transform: rotate(-2deg); } }
+.gift-toy {
+  position: absolute; left: 10%; width: 80%; height: 70%; top: -18%; object-fit: contain; cursor: pointer;
+  animation: popup 0.6s cubic-bezier(.3,1.5,.5,1);
+}
+@keyframes popup { from { transform: translateY(45%) scale(0.2); opacity: 0; } }
+.g1-answer { display: grid; gap: 1.2rem; justify-items: center; transition: opacity 0.3s ease; }
+.g1-answer.wait { opacity: 0; pointer-events: none; }
+
+/* game 2: grey pictures turn to colour when picked right */
+.target {
+  font: 800 clamp(2.6rem, 10vmin, 6.5rem)/1 var(--font-kid); color: var(--ink);
+  background: var(--paper); border-radius: 1.2rem; padding: 0.4rem 1.6rem;
+  border: 0.28rem solid var(--leaf); box-shadow: 0 0.45rem 0 rgba(90, 58, 30, 0.35); margin: 0;
+}
+.pic {
+  border: 0; background: none; cursor: pointer; padding: 0.4rem;
+  width: clamp(9rem, 22vw, 20rem); max-width: 100%;
+  display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  font-family: var(--font-kid); transition: transform 0.15s ease;
+}
+.pic:active { transform: scale(0.95); }
+.pic:focus-visible { outline: 4px solid var(--sky); outline-offset: 4px; border-radius: 1rem; }
+.pic img { width: 100%; height: clamp(7rem, 30vmin, 17rem); object-fit: contain; pointer-events: none; }
+.pic .word { font-size: clamp(1.6rem, 5vmin, 3rem); font-weight: 800; line-height: 1; color: var(--paper); text-shadow: var(--outline); }
+.pic.gray img { filter: grayscale(1) contrast(0.9) brightness(1.1); }
+.pic.gray .word { visibility: hidden; }
+.pic.done { cursor: default; }
+.pic.done img { animation: pop 0.5s cubic-bezier(.3,1.6,.5,1); }
+.pic.shake { animation: shake 0.4s ease; }
+@keyframes shake { 20%, 60% { transform: translateX(-0.8rem); } 40%, 80% { transform: translateX(0.8rem); } }
+.reveal { animation: pop 0.5s cubic-bezier(.3,1.6,.5,1); }
+@keyframes pop { from { transform: scale(0.3); opacity: 0; } }
+
+/* flying toys + stars */
+.fx { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 20; }
+.flyer { position: absolute; width: clamp(8rem, 24vmin, 16rem); }
+.flyer.kite { animation: kite 2.6s ease-in-out forwards; left: 8%; top: 70%; }
+@keyframes kite {
+  30% { transform: translate(25vw, -35vh) rotate(-12deg); }
+  60% { transform: translate(50vw, -55vh) rotate(10deg); }
+  100% { transform: translate(85vw, -80vh) rotate(-8deg); opacity: 0; }
+}
+.flyer.truck { animation: truck 2.4s ease-in-out forwards; left: -30%; bottom: 6%; }
+@keyframes truck {
+  15% { transform: translateX(10vw) translateY(-0.5rem); }
+  30% { transform: translateX(30vw); }
+  45% { transform: translateX(50vw) translateY(-0.5rem); }
+  100% { transform: translateX(150vw); }
+}
+.star {
+  position: absolute; width: 2.6rem; height: 2.6rem; background: var(--sun);
+  clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  animation: burst 0.9s ease-out forwards;
+}
+@keyframes burst { to { transform: translate(var(--dx), var(--dy)) rotate(200deg) scale(0.4); opacity: 0; } }
+.praise {
+  position: absolute; left: 50%; top: 42%; transform: translate(-50%, -50%);
+  font: 800 clamp(3rem, 12vmin, 8rem)/1 var(--font-kid); color: var(--paper);
+  text-shadow: var(--outline);
+  animation: praise 1.1s ease-out forwards;
+}
+@keyframes praise { 0% { transform: translate(-50%, -50%) scale(0.4); opacity: 0; } 25% { transform: translate(-50%, -50%) scale(1.08); opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; } }
+
+/* ---------- bottom: teacher note + arrows ---------- */
+.bottom { display: flex; align-items: center; gap: 0.8rem; }
+.note {
+  flex: 1; min-width: 0; margin: 0;
+  font: 600 clamp(0.85rem, 1.9vmin, 1.1rem)/1.35 var(--font-ui); color: var(--ink-soft);
+  background: var(--paper); border-radius: 0.8rem; padding: 0.6rem 0.9rem;
+  box-shadow: inset 0 0 0 2px var(--leaf);
+}
+.note b { color: var(--leaf-deep); }
+.nav {
+  flex: none; border: 0; cursor: pointer; width: clamp(3.4rem, 9vmin, 5rem); aspect-ratio: 1; border-radius: 50%;
+  background: var(--leaf-deep); color: var(--paper); font: 800 clamp(1.6rem, 4.4vmin, 2.6rem)/1 var(--font-ui);
+}
+.nav:disabled { opacity: 0.3; cursor: default; }
+
+@media (max-width: 640px) {
+  .tools .tool span { display: none; }
+  .card { --size: clamp(7rem, 38vw, 12rem); }
+  .card.big, .card.wide { --size: min(70vw, 18rem); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition: none !important; }
+}
+[hidden] { display: none !important; }
+
+/* ---------- review lesson extras ---------- */
+/* question bar 1–12: same pills as the lesson steps strip */
+.qbar { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; }
+.qbar .step { min-width: 2.6rem; justify-content: center; font-variant-numeric: tabular-nums; }
+.qbar .step.done { background: var(--yes); color: #fff; box-shadow: inset 0 0 0 2px var(--leaf-deep); }
+.qbar .step.done[aria-current="true"] { background: var(--leaf-deep); color: var(--sun); }
+/* quiz: word on top, the 4 pictures sit low so the shortest children can reach them */
+.scene[data-step="quiz"] { justify-content: flex-start; }
+.scene[data-step="quiz"] #quizChoices { margin-top: auto; }
+
+/* toy parade */
+.bunting { position: absolute; top: -0.4rem; left: 50%; transform: translateX(-50%); width: min(92%, 64rem); pointer-events: none; z-index: 0; }
+.parade { position: relative; z-index: 1; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: clamp(1rem, 4vmin, 3rem); padding-top: clamp(2.5rem, 9vmin, 6rem); }
+.marcher { height: clamp(9rem, 32vmin, 19rem); width: auto; }
+.marcher.playing { animation: march 0.42s ease-in-out infinite alternate; }
+@keyframes march { from { transform: translateX(-1.2rem) rotate(-5deg); } to { transform: translateX(1.2rem) rotate(5deg) translateY(-0.7rem); } }
+.parade-result { display: grid; gap: 1rem; justify-items: center; }
+/* colour roulette: 12 grey pictures, colour jumps around while the music plays, one stays lit when it stops */
+.scene[data-step="parade"] .parade { flex-direction: column; flex-wrap: nowrap; gap: clamp(0.5rem, 2vmin, 1.2rem); padding-top: clamp(1.5rem, 5vmin, 3.5rem); width: 100%; }
+.parade-q { min-height: 1.1em; }
+/* the 12-picture grid fills the scene, so the picnic bunting would sit on top of it */
+.scene[data-step="parade"] .bunting { display: none; }
+/* every tile gets a fixed square size from the screen width and height, so a tall picture (robot)
+   can never stretch its row and the 2 rows always leave room for the Play button */
+.lights {
+  --tile: min(calc((100vw - 8rem) / 6.5), calc((100vh - 23.5rem) / 2.1), 13rem);
+  display: grid; grid-template-columns: repeat(6, var(--tile)); grid-auto-rows: var(--tile);
+  gap: clamp(0.4rem, 1.6vmin, 1.1rem); justify-content: center;
+}
+.light {
+  position: relative; border: 0; padding: 0; cursor: pointer; width: var(--tile); height: var(--tile); min-height: 0;
+  background: #fff; border-radius: 1.2rem; box-shadow: 0 0.4rem 1rem rgba(60, 40, 90, 0.12);
+  display: grid; place-items: center; transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.3s ease;
+}
+.light img { position: absolute; inset: 8%; width: 84%; height: 84%; object-fit: contain; pointer-events: none; filter: grayscale(1) brightness(1.12) opacity(0.5); transition: filter 0.12s ease; }
+.light:focus-visible { outline: 4px solid var(--sky); outline-offset: 4px; }
+.light.on { transform: scale(1.07); box-shadow: 0 0 0 0.35rem var(--c), 0 0.6rem 1.4rem rgba(60, 40, 90, 0.2); }
+.light.on img { filter: none; }
+.lights.stopped .light:not(.win) { opacity: 0.35; transform: scale(0.94); }
+.light.win { z-index: 2; transform: scale(1.22); animation: glow 0.8s ease-in-out infinite alternate; }
+@keyframes glow { to { box-shadow: 0 0 0 0.55rem var(--c), 0 0 2.4rem 0.4rem var(--c); } }
+
+/* hide & find */
+.meadow { display: grid; grid-template-columns: repeat(3, auto); gap: clamp(0.6rem, 3vmin, 2.6rem) clamp(1rem, 6vmin, 5rem); justify-content: center; }
+.spot { position: relative; border: 0; background: none; cursor: pointer; padding: 0; width: clamp(7rem, 20vmin, 13rem); aspect-ratio: 1; max-width: 100%; }
+.spot:focus-visible { outline: 4px solid var(--sky); outline-offset: 4px; border-radius: 1rem; }
+.spot .cover, .spot .toy { position: absolute; object-fit: contain; pointer-events: none; }
+.spot .cover { inset: 0; width: 100%; height: 100%; z-index: 2; transition: transform 0.5s ease, opacity 0.5s ease; }
+.spot .toy { left: 12%; bottom: 8%; width: 76%; height: 76%; z-index: 1; opacity: 0; transform: scale(0.4); transition: transform 0.45s cubic-bezier(.3,1.6,.5,1), opacity 0.3s ease; }
+.spot.found { cursor: default; }
+.spot.found .cover { transform: translate(48%, 18%) rotate(16deg) scale(0.72); opacity: 0.85; }
+.spot.found .toy { z-index: 3; opacity: 1; transform: translateY(-28%) scale(1.05); }
+.spot.shake { animation: shake 0.4s ease; }
+/* before "Hide!": every toy sits in front of its hiding spot so the children can see where it goes */
+.spot.peek { cursor: default; }
+.spot.peek .cover { transform: translate(48%, 18%) rotate(16deg) scale(0.72); opacity: 0.85; }
+.spot.peek .toy { z-index: 3; opacity: 1; transform: translateY(-28%) scale(1.05); }
+/* Hint: the cover lifts a little and the toy peeks out, then it hides again */
+.spot.hint .cover { transform: translateY(-38%) rotate(-8deg); }
+.spot.hint .toy { opacity: 1; transform: translateY(-6%) scale(0.85); }
+.finder { height: clamp(5rem, 16vmin, 10rem); width: auto; animation: hello 1.8s ease-in-out infinite; transform-origin: 50% 100%; }
+
+/* questions */
+.asker { height: clamp(8rem, 30vmin, 18rem); width: auto; }
+.qbtns { display: grid; gap: 0.8rem; justify-items: stretch; }
+.qbtns .btn { justify-content: center; }
+.qbtns .btn[aria-pressed="true"] { background: var(--leaf-deep); color: var(--paper); box-shadow: 0 0.35rem 0 #3b2412; }
+
+/* ---------- Kiddyland theme ---------- */
+:root {
+  --kl-purple: #6a3d9a;
+  --kl-pink: #ec2a7b;
+  --kl-yellow: #ffc928;
+  --kl-teal: #22c3b0;
+  --kl-blue: #29a8e0;
+  --kl-lime: #b3cf1d;
+  --kl-orange: #f7941d;
+  --kl-shadow: 0 0.7rem 1.8rem rgba(60, 40, 90, 0.16);
+  --bg: #ffffff;
+  --bg-deep: #ffffff;
+  --paper: #ffffff;
+  --leaf: var(--kl-purple);
+  --leaf-deep: var(--kl-purple);
+  --ink: #3d3d3d;
+  --ink-soft: #6b6b6b;
+  --yes: var(--kl-teal);
+  --no: var(--kl-pink);
+  --sun: var(--kl-yellow);
+  --sky: var(--kl-blue);
+  --font-kid: "Fredoka", "Baloo 2", "Comic Sans MS", system-ui, sans-serif;
+}
+body { background: #fff; }
+/* big colour blobs in the corners + scattered dots, like the template's slides */
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(circle at 96% 4%, var(--kl-yellow) 0 16vmin, transparent calc(16vmin + 1px)),
+    radial-gradient(circle at 2% 100%, var(--kl-purple) 0 13vmin, transparent calc(13vmin + 1px)),
+    radial-gradient(circle at 100% 100%, var(--kl-teal) 0 7vmin, transparent calc(7vmin + 1px)),
+    radial-gradient(circle at 0% 20%, var(--kl-lime) 0 5vmin, transparent calc(5vmin + 1px)),
+    radial-gradient(circle at 14% 12%, var(--kl-blue) 0 1vmin, transparent calc(1vmin + 1px)),
+    radial-gradient(circle at 38% 7%, var(--kl-pink) 0 0.8vmin, transparent calc(0.8vmin + 1px)),
+    radial-gradient(circle at 63% 10%, var(--kl-lime) 0 1.1vmin, transparent calc(1.1vmin + 1px)),
+    radial-gradient(circle at 80% 30%, var(--kl-purple) 0 0.8vmin, transparent calc(0.8vmin + 1px)),
+    radial-gradient(circle at 93% 55%, var(--kl-pink) 0 1.4vmin, transparent calc(1.4vmin + 1px)),
+    radial-gradient(circle at 6% 50%, var(--kl-yellow) 0 1.2vmin, transparent calc(1.2vmin + 1px)),
+    radial-gradient(circle at 22% 78%, var(--kl-teal) 0 0.9vmin, transparent calc(0.9vmin + 1px)),
+    radial-gradient(circle at 52% 92%, var(--kl-orange) 0 1vmin, transparent calc(1vmin + 1px)),
+    radial-gradient(circle at 76% 84%, var(--kl-blue) 0 0.8vmin, transparent calc(0.8vmin + 1px)),
+    var(--scene-photo) center / cover no-repeat;
+}
+
+/* two-colour titles: dark grey with one bright word */
+.big-title, .question { color: var(--ink); text-shadow: none; font-weight: 700; }
+.c-pink { color: var(--kl-pink); } .c-blue { color: var(--kl-blue); } .c-teal { color: var(--kl-teal); }
+.c-yellow { color: var(--kl-yellow); } .c-purple { color: var(--kl-purple); } .c-orange { color: var(--kl-orange); }
+
+/* teacher strip + notes: white pills with soft shadows */
+.step, .tool { box-shadow: 0 0.25rem 0.8rem rgba(60, 40, 90, 0.12); }
+.step[aria-current="true"] { background: var(--kl-purple); color: #fff; }
+.step[aria-current="true"] b { color: var(--kl-yellow); }
+.qbar .step.done { background: var(--kl-teal); color: #fff; box-shadow: none; }
+.note { box-shadow: var(--kl-shadow); border-left: 0.45rem solid var(--kl-pink); }
+.note b { color: var(--kl-pink); }
+.nav { background: var(--kl-purple); }
+#next { background: var(--kl-pink); }
+
+/* cards: white photo frames that float on the page */
+.card { border: 0.4rem solid #fff; border-radius: 1.6rem; box-shadow: var(--kl-shadow); }
+.card .word { color: var(--kl-purple); font-weight: 700; }
+.card .back {
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0 0.35rem, transparent 0.4rem) 0 0 / 1.6rem 1.6rem, var(--kl-purple);
+  color: var(--kl-yellow); text-shadow: none;
+}
+.target { border: 0; color: var(--kl-pink); box-shadow: var(--kl-shadow); font-weight: 700; }
+.pic .word { text-shadow: none; font-weight: 700; color: var(--kl-blue); }
+.pic:nth-child(4n+2) .word { color: var(--kl-pink); }
+.pic:nth-child(4n+3) .word { color: var(--kl-teal); }
+.pic:nth-child(4n) .word { color: var(--kl-orange); }
+
+/* buttons: flat bright pills */
+.btn { border: 0; background: var(--kl-yellow); color: var(--ink); box-shadow: 0 0.35rem 0 #e0a600; }
+.btn:active { box-shadow: 0 0.1rem 0 #e0a600; }
+.btn.ghost { background: #fff; box-shadow: var(--kl-shadow); }
+.btn.speak { background: var(--kl-blue); box-shadow: 0 0.35rem 0 #1d84b3; }
+.picker .btn[aria-pressed="true"], .qbtns .btn[aria-pressed="true"] { background: var(--kl-purple); color: #fff; box-shadow: 0 0.35rem 0 #4a2a6e; }
+.thumb { border: 0; }
+.thumb.yes { box-shadow: 0 0.45rem 0 #179484; }
+.thumb.no { box-shadow: 0 0.45rem 0 #b81d5e; }
+
+/* praise + stars in the template colours */
+.praise {
+  color: var(--kl-pink);
+  text-shadow: 0.05em 0 0 #fff, -0.05em 0 0 #fff, 0 0.05em 0 #fff, 0 -0.05em 0 #fff, 0 0.12em 0.2em rgba(60, 40, 90, 0.25);
+}
+.star:nth-child(4n+1) { background: var(--kl-pink); }
+.star:nth-child(4n+2) { background: var(--kl-teal); }
+.star:nth-child(4n+3) { background: var(--kl-blue); }
+
+
+/* ---------- Mimi's Picnic Basket (Food, week 1 lesson 2) ---------- */
+.hello-sub { margin: 0; font: 600 clamp(1.3rem, 4vmin, 2.4rem)/1 var(--font-kid); color: var(--ink-soft); }
+.mimi { height: clamp(8rem, 30vh, 18rem); width: auto; animation: hello 1.8s ease-in-out infinite; transform-origin: 50% 100%; }
+/* flip cards: purple dotted back, picture on the front */
+.flip { position: relative; perspective: 900px; border: 0; background: none; padding: 0; cursor: pointer;
+  width: clamp(9rem, 26vh, 16rem); aspect-ratio: 3 / 4; }
+.flip:focus-visible { outline: 4px solid var(--sky); outline-offset: 6px; border-radius: 1.6rem; }
+.flip .in { position: absolute; inset: 0; transition: transform 0.55s cubic-bezier(.3,1.3,.5,1); transform-style: preserve-3d; }
+.flip.open .in { transform: rotateY(180deg); }
+.flip .side { position: absolute; inset: 0; backface-visibility: hidden; border-radius: 1.6rem; box-shadow: var(--kl-shadow); border: 0.4rem solid #fff;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.4rem; overflow: hidden; }
+.flip .back { background: radial-gradient(circle, rgba(255,255,255,0.2) 0 0.35rem, transparent 0.4rem) 0 0 / 1.6rem 1.6rem, var(--kl-purple);
+  color: var(--kl-yellow); font: 700 clamp(4rem, 12vh, 7rem)/1 var(--font-kid); }
+.flip .front { background: #fff; transform: rotateY(180deg); }
+.flip .front img { width: 82%; height: 62%; object-fit: contain; }
+.flip .front .word { font: 700 clamp(1.4rem, 4.5vh, 2.6rem)/1 var(--font-kid); color: var(--kl-pink); }
+/* story: Mimi and her magic basket */
+.story { display: flex; align-items: flex-end; justify-content: center; gap: clamp(1rem, 4vw, 4rem); }
+.story-mimi { height: clamp(9rem, 38vh, 22rem); width: auto; }
+.basket { position: relative; border: 0; background: none; padding: 0; cursor: pointer; width: clamp(8rem, 26vh, 15rem); }
+.basket img { width: 100%; display: block; }
+.basket.shake { animation: shake 0.45s ease; }
+.basket:focus-visible { outline: 4px solid var(--sky); outline-offset: 6px; border-radius: 1rem; }
+.story-food { display: flex; gap: clamp(0.8rem, 3vw, 2rem); min-height: clamp(9rem, 30vh, 17rem); align-items: center; }
+.story-food .card { --size: clamp(8rem, 22vh, 13rem); animation: rise 0.7s cubic-bezier(.3,1.5,.5,1); }
+@keyframes rise { from { transform: translateY(60%) scale(0.2); opacity: 0; } }
+/* learn: one big card + its action */
+.learn { display: flex; align-items: center; justify-content: center; gap: clamp(1rem, 4vw, 3.5rem); flex-wrap: wrap; }
+.scene[data-step="learn"] .card.big, .scene[data-step="what"] .card.big { --size: clamp(10rem, 36vh, 20rem); }
+.tpr { display: grid; gap: 1rem; justify-items: center; max-width: 26rem; }
+.tpr-chip { margin: 0; font: 700 clamp(1.3rem, 4vh, 2.2rem)/1.25 var(--font-kid); color: var(--ink); background: #fff;
+  border-radius: 1.4rem; padding: 0.9rem 1.3rem; box-shadow: var(--kl-shadow); border-left: 0.45rem solid var(--kl-teal); text-align: left; }
+/* What's this?: the card hides behind a curtain until it is tapped */
+.mystery { position: relative; border: 0; background: none; padding: 0; cursor: pointer; }
+.mystery .card { pointer-events: none; }
+.mystery .curtain { position: absolute; inset: 0; border-radius: 1.6rem; display: grid; place-items: center;
+  background: radial-gradient(circle, rgba(255,255,255,0.2) 0 0.35rem, transparent 0.4rem) 0 0 / 1.6rem 1.6rem, var(--kl-purple);
+  color: var(--kl-yellow); font: 700 clamp(5rem, 16vh, 9rem)/1 var(--font-kid); transition: clip-path 0.9s ease; clip-path: inset(0 0 0 0 round 1.6rem); }
+.mystery.peek .curtain { clip-path: inset(0 0 55% 0 round 1.6rem); }
+.mystery.open .curtain { clip-path: inset(0 0 100% 0 round 1.6rem); }
+.answer { margin: 0; min-height: 1.2em; font: 700 clamp(2rem, 7vh, 4rem)/1.1 var(--font-kid); color: var(--ink); }
+/* Basket Hunt: 4 hiding spots in a row, the basket collects what is found */
+.hunt-top { display: flex; align-items: center; justify-content: center; gap: clamp(0.8rem, 3vw, 2rem); }
+.hunt-basket { position: relative; width: clamp(5rem, 15vh, 9rem); }
+.hunt-basket img { width: 100%; display: block; }
+.hunt-basket b { position: absolute; right: -0.4rem; top: -0.4rem; min-width: 2.2rem; height: 2.2rem; border-radius: 999px; display: grid; place-items: center;
+  background: var(--kl-pink); color: #fff; font: 700 1.3rem/1 var(--font-kid); box-shadow: 0 0.2rem 0.5rem rgba(0,0,0,0.2); }
+.meadow.four { grid-template-columns: repeat(4, auto); }
+.meadow.four .spot { width: clamp(7rem, 22vh, 13rem); }
+/* Feed Mimi */
+.feed { display: flex; align-items: center; justify-content: center; gap: clamp(1rem, 5vw, 5rem); }
+.feed-mimi { height: clamp(10rem, 44vh, 26rem); width: auto; transform-origin: 50% 100%; }
+.feed-mimi.yum { animation: yum 0.8s ease; }
+.feed-mimi.no { animation: shake 0.45s ease; }
+@keyframes yum { 30% { transform: scale(1.08, 0.92); } 60% { transform: scale(0.96, 1.06) translateY(-0.8rem); } }
+.feed-foods { display: grid; grid-template-columns: repeat(2, auto); gap: clamp(0.6rem, 2vh, 1.2rem); }
+.feed-foods .card { --size: clamp(7rem, 20vh, 12rem); }
+.feed-foods .card.gone { visibility: hidden; }
+.fly { position: fixed; z-index: 25; pointer-events: none; object-fit: contain; transition: all 1.2s cubic-bezier(.5,-0.2,.6,1); }
+/* sentence pill with its speaker */
+.word-pill {
+  display: inline-flex; align-items: center; gap: clamp(0.6rem, 2vmin, 1.2rem); cursor: pointer;
+  border: 0; background: #fff; border-radius: 999px; padding: 0.35rem 0.45rem 0.35rem clamp(1.4rem, 4vmin, 2.4rem);
+  box-shadow: var(--kl-shadow);
+}
+.word-pill:active { transform: scale(0.97); }
+.word-pill:focus-visible { outline: 4px solid var(--sky); outline-offset: 4px; }
+.word-text { display: inline-block; font: 700 clamp(1.6rem, 5.5vh, 3.2rem)/1.15 var(--font-kid); color: var(--ink); }
+.word-text b { color: var(--kl-pink); }
+.word-spk {
+  display: grid; place-items: center; width: clamp(3rem, 9vmin, 5rem); aspect-ratio: 1; border-radius: 50%;
+  background: var(--kl-blue); font-size: clamp(1.3rem, 4vmin, 2.2rem); box-shadow: 0 0.25rem 0 #1d84b3;
+}
+/* sum up: 4 face-up pictures, tap to show the answer */
+.sum { display: flex; gap: clamp(0.8rem, 3vw, 2.2rem); justify-content: center; flex-wrap: wrap; }
+.sum .card { --size: clamp(8rem, 24vh, 14rem); }
+.sum .card .word { visibility: hidden; }
+.sum .card.said .word { visibility: visible; color: var(--kl-pink); }
+
+/* ---------- Week 2 review: TV time, Mimi's Choice, Food Shop ---------- */
+.tv { display: flex; align-items: center; justify-content: center; gap: clamp(1rem, 4vw, 3.5rem); }
+.tv .mimi { height: clamp(8rem, 34vh, 20rem); }
+.tv-cards { display: flex; gap: clamp(0.8rem, 3vw, 2rem); }
+.tv-cards .card { --size: clamp(8rem, 24vh, 14rem); }
+.links { display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center; }
+.btn.red { background: #ff4b4b; color: #fff; box-shadow: 0 0.35rem 0 #c62f2f; }
+/* 8 cards in 2 rows of 4, sized from the screen height */
+.grid8 {
+  --c: min(calc((100vw - 8rem) / 4.6), calc((100vh - 24rem) / 2.7), 12rem);
+  display: grid; grid-template-columns: repeat(4, var(--c)); gap: clamp(0.6rem, 2vh, 1.2rem); justify-content: center;
+}
+.grid8 .card { --size: var(--c); }
+.grid8 .card.pick { box-shadow: 0 0 0 0.4rem var(--kl-pink), var(--kl-shadow); transform: scale(1.05); }
+/* Food Shop: two shops with awnings, the group's basket in the middle */
+.shops { display: flex; align-items: center; justify-content: center; gap: clamp(0.8rem, 3vw, 2.5rem); }
+.shop { background: #fff; border-radius: 1.4rem; box-shadow: var(--kl-shadow); padding: 0 clamp(0.6rem, 1.5vw, 1.2rem) clamp(0.6rem, 1.5vw, 1.2rem); overflow: hidden; }
+.awning {
+  margin: 0 calc(-1 * clamp(0.6rem, 1.5vw, 1.2rem)) clamp(0.5rem, 1.5vh, 0.9rem); padding: 0.45rem 0; text-align: center;
+  font: 700 clamp(1.1rem, 3.4vh, 1.8rem)/1 var(--font-kid); color: #fff;
+  background: repeating-linear-gradient(90deg, var(--aw) 0 2.2rem, #fff 2.2rem 4.4rem); text-shadow: 0 0.1rem 0.3rem rgba(0,0,0,0.35);
+}
+.shop.s1 .awning { --aw: var(--kl-pink); }
+.shop.s2 .awning { --aw: var(--kl-blue); }
+.shop-items { display: grid; grid-template-columns: repeat(2, auto); gap: clamp(0.5rem, 1.6vh, 1rem); }
+.shop-items .card { --size: clamp(6rem, 15vh, 10rem); }
+.shop-items .card.sold { opacity: 0.25; pointer-events: none; }
+.cart { display: grid; justify-items: center; gap: 0.6rem; }
+.cart-basket { position: relative; width: clamp(8rem, 24vh, 14rem); }
+.cart-basket > img { width: 100%; display: block; }
+.cart-items { position: absolute; left: 12%; right: 12%; top: -8%; height: 52%; display: flex; justify-content: center; gap: 4%; }
+.cart-items img { height: 100%; width: 44%; object-fit: contain; animation: pop 0.45s cubic-bezier(.3,1.6,.5,1); }
+.cart-items.eaten img { animation: eat 0.7s ease forwards; }
+@keyframes eat { to { transform: scale(0) rotate(30deg); opacity: 0; } }
+</style>
+
+<div class="app">
+  <nav class="steps" id="steps" aria-label="Các bước của buổi học"></nav>
+
+  <main class="stage">
+    <!-- 1. Hello -->
+    <section class="scene" data-step="hello">
+      <div class="row"><img class="mimi" src="../assets/img/mimi.webp" alt=""><h1 class="big-title">Hello, <span class="c-pink">every</span><span class="c-blue">one!</span></h1></div>
+      <p class="hello-sub">Mimi's Picnic Basket · I like food!</p>
+      <a class="btn" href="https://www.youtube.com/watch?v=fN1Cyr0ZK9M" target="_blank" rel="noopener">▶ Hello! Hello! Song</a>
+    </section>
+
+    <!-- 2. Quick review: milk, cake, fish, soup (flip cards) -->
+    <section class="scene" data-step="review" hidden>
+      <p class="question">What's <span class="c-pink">this?</span></p>
+      <div class="row" id="revCards"></div>
+      <button class="btn ghost" id="revAgain" type="button">🔀 Úp lại</button>
+    </section>
+
+    <!-- 3. TV time: Are You Hungry? #2 -->
+    <section class="scene" data-step="tv" hidden>
+      <p class="question">Listen for <span class="c-pink">rice</span> and <span class="c-blue">eggs!</span></p>
+      <div class="tv">
+        <img class="mimi" src="../assets/img/mimi.webp" alt="Mimi">
+        <div class="tv-cards" id="tvCards"></div>
+      </div>
+      <div class="links">
+        <a class="btn red" href="https://supersimple.com/song/are-you-hungry-2/" target="_blank" rel="noopener">▶ Are You Hungry? #2</a>
+        <a class="btn ghost" href="https://www.youtube.com/results?search_query=Are+You+Hungry+2+Super+Simple+Songs" target="_blank" rel="noopener">🔎 Tìm trên YouTube</a>
+      </div>
+    </section>
+
+    <!-- 4. Game 1: Mimi's Choice -->
+    <section class="scene" data-step="choice" hidden>
+      <button class="word-pill" id="choiceSay" type="button"><span class="word-text" id="choiceText">What do you <b>like?</b></span><span class="word-spk" aria-hidden="true">🔊</span></button>
+      <div class="grid8" id="choiceCards"></div>
+      <button class="btn ghost" id="choiceAgain" type="button">🔀 Trộn thẻ</button>
+    </section>
+
+    <!-- 5. Game 2: Food Shop -->
+    <section class="scene" data-step="shop" hidden>
+      <button class="word-pill" id="shopSay" type="button"><span class="word-text" id="shopText">Welcome to the <b>Food Shop!</b></span><span class="word-spk" aria-hidden="true">🔊</span></button>
+      <div class="shops">
+        <div class="shop s1"><div class="awning">Shop 1</div><div class="shop-items" id="shop1"></div></div>
+        <div class="cart">
+          <div class="cart-basket" id="cartBasket"><img src="../assets/img/basket.webp" alt="Giỏ"><div class="cart-items" id="cartItems"></div></div>
+          <button class="btn" id="shopEat" type="button" disabled>😋 Eat!</button>
+        </div>
+        <div class="shop s2"><div class="awning">Shop 2</div><div class="shop-items" id="shop2"></div></div>
+      </div>
+      <button class="btn ghost" id="shopNext" type="button">▶ Nhóm tiếp theo</button>
+    </section>
+
+    <!-- 6. Sum up -->
+    <section class="scene" data-step="sum" hidden>
+      <p class="question">What do you <span class="c-pink">like?</span></p>
+      <div class="grid8" id="sumCards"></div>
+      <p class="answer" id="sumAns"></p>
+    </section>
+
+    <!-- 7. Bye -->
+    <section class="scene" data-step="bye" hidden>
+      <div class="row"><img class="mimi" src="../assets/img/mimi.webp" alt=""><h2 class="big-title">Good<span class="c-pink">bye!</span></h2></div>
+      <a class="btn" href="https://www.youtube.com/watch?v=PraN5ZoSjiY" target="_blank" rel="noopener">▶ Bye Bye Goodbye</a>
+    </section>
+  </main>
+
+  <footer class="bottom">
+    <button class="nav" id="prev" type="button" aria-label="Bước trước">‹</button>
+    <p class="note" id="note"></p>
+    <button class="nav" id="next" type="button" aria-label="Bước sau">›</button>
+  </footer>
+</div>
+<div class="fx" id="fx" aria-hidden="true"></div>
+
+<script>
+// ---- lesson data (lớp Donal 3 tuổi, Tháng 11 — Food, Tuần 2 Buổi 3/3: buổi TV + ôn 8 từ, luyện What do you like? – I like ___.) ----
+const IMG = "../assets/img/", AUD = "../assets/audio/";
+const TOYS = {
+  bread:   { img: IMG + "bread.svg",   like: "bread" },
+  egg:     { img: IMG + "egg.svg",     like: "eggs" },
+  rice:    { img: IMG + "rice.png",    like: "rice" },
+  chicken: { img: IMG + "chicken.svg", like: "chicken" },
+  fish:    { img: IMG + "fish.svg",    like: "fish" },
+  soup:    { img: IMG + "soup.svg",    like: "soup" },
+  milk:    { img: IMG + "milk.png",    like: "milk" },
+  cake:    { img: IMG + "cake.png",    like: "cake" },
+};
+const ALL = Object.keys(TOYS);
+const WEEK2 = ["fish", "soup", "milk", "cake"];
+// recorded sentences (assets/audio), so the sound does not depend on the TV having an English voice
+const CLIPS = { "Yummy!": AUD + "yummy.wav", "What do you like?": AUD + "what-do-you-like.wav" };
+ALL.forEach(k => {
+  CLIPS[k] = AUD + k + ".wav";
+  CLIPS[`I like ${TOYS[k].like}!`] = AUD + "like-" + k + ".wav";
+  CLIPS[`I like ${TOYS[k].like}, please.`] = AUD + "please-" + k + ".wav";
+});
+const likeHtml = k => `I like <b>${TOYS[k].like}!</b>`;
+const STEPS = [
+  { id: "hello",  label: "Hello",          note: "<b>Warm up:</b> bấm nút mở bài Hello (tab mới), cả lớp đứng lên hát và vỗ tay. Cô chào: “Hello everyone! How are you today?”" },
+  { id: "review", label: "Ôn 4 món",       note: "<b>Quick review (milk, cake, fish, soup):</b> cô hỏi “What's this?”, một bé lên lật thẻ, máy đọc tên; cả lớp nói và làm động tác (fish: tay bơi như cá; soup: khuấy và thổi; milk: cầm cốc uống; cake: thổi nến)." },
+  { id: "tv",     label: "TV time",        note: "<b>TV time (tối đa 5 phút):</b> “Mimi is hungry! Let's watch a song about food. Listen for RICE and EGGS!” Bấm nút đỏ mở trang Super Simple và chọn video “Are You Hungry? #2” (hoặc tìm trên YouTube). Lần 1: xem, cô chỉ “Look! Rice!”. Lần 2: dừng ở đoạn rice, eggs cho bé nói và làm động tác. Lần 3: đứng lên hát điệp khúc. Chạm thẻ để máy đọc." },
+  { id: "choice", label: "Mimi's Choice",  note: "<b>Mimi's Choice:</b> cô hỏi “What do you like?” (chạm khung 🔊 để máy hỏi). Từng nhóm nhỏ chọn 1 món: chạm thẻ thì máy nói và hiện câu “I like cake!”, cả lớp vỗ tay “Yummy!”. Không có tiếng thì cô đọc câu trên màn hình." },
+  { id: "shop",   label: "Food Shop",      note: "<b>Food Shop:</b> một nhóm lên “mua” 2 món: chạm món ở Shop 1 hoặc Shop 2, máy nói và hiện “I like milk, please.”, món ăn bay vào giỏ. Đủ 2 món thì bấm <b>😋 Eat!</b>, cả lớp làm động tác ăn “Yummy!”. Cô bấm <b>▶ Nhóm tiếp theo</b> khi sẵn sàng." },
+  { id: "sum",    label: "Review",         note: "<b>Sum up:</b> “What do you like?” Cả lớp nói món mình thích; chạm vào món để hiện câu “I like ___! Yummy!” (không có tiếng, cô đọc)." },
+  { id: "bye",    label: "Bye",            note: "<b>Goodbye:</b> mở bài Bye Bye Goodbye, cả lớp đứng lên hát và vẫy tay." },
+];
+const STORE_KEY = "donal-food-w2-review-step";
+
+// ---- speech ----
+let voice = null;
+const synth = window.speechSynthesis;
+function pickVoice() {
+  if (!synth) return;
+  const vs = synth.getVoices();
+  voice = vs.find(v => /en[-_]US/i.test(v.lang) && /google/i.test(v.name))
+       || vs.find(v => /en[-_](US|GB)/i.test(v.lang))
+       || vs.find(v => /^en/i.test(v.lang)) || null;
+}
+// one reused player: recorded clip first, the browser's own voice only for anything not recorded
+const player = new Audio();
+function showNoSound() { document.getElementById("voiceWarn").hidden = false; }
+function playClip(text, times = 1) {
+  if (!CLIPS[text]) return false;
+  let left = times;
+  player.onended = () => { if (--left > 0) setTimeout(() => { player.currentTime = 0; player.play().catch(showNoSound); }, 500); };
+  player.pause(); player.src = CLIPS[text];
+  player.play().then(() => { document.getElementById("voiceWarn").hidden = true; }, showNoSound);
+  return true;
+}
+function say(text) {
+  if (playClip(text)) return;
+  if (!synth) return;
+  synth.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "en-US"; if (voice) u.voice = voice;
+  u.rate = 0.8; u.pitch = 1.15;
+  synth.speak(u);
+}
+
+// ---- effects ----
+const fx = document.getElementById("fx");
+function stars(x, y) {
+  for (let i = 0; i < 14; i++) {
+    const s = document.createElement("div");
+    s.className = "star";
+    const a = (i / 14) * Math.PI * 2, r = 120 + Math.random() * 160;
+    s.style.left = x + "px"; s.style.top = y + "px";
+    s.style.setProperty("--dx", Math.cos(a) * r + "px");
+    s.style.setProperty("--dy", Math.sin(a) * r + "px");
+    fx.appendChild(s); setTimeout(() => s.remove(), 1000);
+  }
+}
+function praise(word) {
+  const p = document.createElement("div");
+  p.className = "praise"; p.textContent = word;
+  const h = document.createElement("img");
+  h.className = "cheer"; h.src = "../assets/img/mimi.webp"; h.alt = "";
+  fx.querySelectorAll(".cheer").forEach(o => o.remove());
+  fx.append(p, h); setTimeout(() => p.remove(), 1200); setTimeout(() => h.remove(), 1500);
+}
+
+// ---- building blocks ----
+function card(key, { big = false, word = true, frame = true } = {}) {
+  const b = document.createElement("button");
+  const inner = `<img src="${TOYS[key].img}" alt="">${word ? `<span class="word">${key}</span>` : ""}`;
+  b.type = "button";
+  b.className = frame ? "card" + (big ? " big" : "") : "pic";
+  b.innerHTML = frame ? `<div class="face">${inner}</div>` : inner;
+  b.setAttribute("aria-label", key);
+  return b;
+}
+function centre(el) { const r = el.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; }
+
+// Yes / No buttons — same component wherever the question is asked
+document.querySelectorAll("[data-thumbs]").forEach(box => {
+  box.innerHTML =
+    `<button class="thumb yes" type="button" data-say="Yes, I do!"><span class="icon">👍</span>Yes, I do!</button>
+     <button class="thumb no" type="button" data-say="No, I don't."><span class="icon">👎</span>No, I don't.</button>`;
+  box.addEventListener("click", e => {
+    const t = e.target.closest(".thumb"); if (!t) return;
+    say(t.dataset.say); stars(...centre(t));
+    praise(t.classList.contains("yes") ? "Great!" : "Good job!");
+  });
+});
+
+// ---- sounds made in the browser (no downloads) ----
+let audio = null;
+function ctx() { audio = audio || new (window.AudioContext || window.webkitAudioContext)(); audio.resume(); return audio; }
+function beep() {
+  try {
+    const a = ctx(), t = a.currentTime, o = a.createOscillator(), g = a.createGain();
+    o.type = "square"; o.frequency.setValueAtTime(220, t); o.frequency.setValueAtTime(180, t + 0.15);
+    g.gain.setValueAtTime(0.18, t); g.gain.setValueAtTime(0.18, t + 0.28); g.gain.linearRampToValueAtTime(0, t + 0.32);
+    o.connect(g).connect(a.destination); o.start(t); o.stop(t + 0.33);
+  } catch (e) {}
+}
+let musicTimer = null;
+const MELODY = [0, 4, 7, 4, 9, 7, 4, 2, 0, 2, 4, 7, 9, 12, 9, 7]; // bouncy marching loop
+function startMusic() {
+  try {
+    const a = ctx(); let i = 0; const beat = 0.24;
+    const tick = () => {
+      const t = a.currentTime;
+      const note = (semi, len, type, vol) => {
+        const o = a.createOscillator(), g = a.createGain();
+        o.type = type; o.frequency.value = 523.25 * Math.pow(2, semi / 12);
+        g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + len);
+        o.connect(g).connect(a.destination); o.start(t); o.stop(t + len);
+      };
+      note(MELODY[i % MELODY.length], beat * 0.9, "triangle", 0.25);
+      if (i % 2 === 0) note(i % 4 === 0 ? -24 : -17, beat * 1.5, "sine", 0.25);
+      i++;
+    };
+    tick(); musicTimer = setInterval(tick, beat * 1000);
+  } catch (e) {}
+}
+function stopMusic() { clearInterval(musicTimer); musicTimer = null; }
+const shuffle = a => a.map(v => [Math.random(), v]).sort((x, y) => x[0] - y[0]).map(x => x[1]);
+const pick = a => a[Math.floor(Math.random() * a.length)];
+
+// fly a copy of a picture from one element to another (food into the basket / into Mimi's mouth)
+function fly(src, fromEl, toEl, size = 0.5) {
+  const a = fromEl.getBoundingClientRect(), b = toEl.getBoundingClientRect();
+  const im = new Image(); im.src = src; im.className = "fly";
+  Object.assign(im.style, { left: a.left + "px", top: a.top + "px", width: a.width + "px", height: a.height + "px" });
+  document.body.appendChild(im);
+  setTimeout(() => {
+    const w = b.width * size, h = b.height * size;
+    Object.assign(im.style, { left: b.left + (b.width - w) / 2 + "px", top: b.top + b.height * 0.25 + "px", width: w + "px", height: h + "px", opacity: "0.2" });
+  }, 30);
+  setTimeout(() => im.remove(), 1300);
+}
+// deal every item in a random order before any item comes back; never the same one twice in a row
+function dealer(items) {
+  let deck = [], last = null;
+  return () => { if (!deck.length) deck = shuffle(items.filter(k => k !== last)); last = deck.pop(); return last; };
+}
+function say3(text) {
+  if (playClip(text, 3)) return;
+  if (!synth) return;
+  synth.cancel();
+  for (let i = 0; i < 3; i++) {
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "en-US"; if (voice) u.voice = voice; u.rate = 0.7; u.pitch = 1.15;
+    synth.speak(u);
+  }
+}
+
+
+// ---- step 2: quick review — flip milk, cake, fish, soup ----
+const revCards = document.getElementById("revCards");
+function revDeal() {
+  revCards.replaceChildren(...shuffle(WEEK2).map(k => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "flip"; b.setAttribute("aria-label", "Thẻ úp");
+    b.innerHTML = `<div class="in"><div class="side back">?</div><div class="side front"><img src="${TOYS[k].img}" alt=""><span class="word">${k}</span></div></div>`;
+    b.addEventListener("click", () => {
+      if (b.classList.contains("open")) { say(k); return; }
+      b.classList.add("open"); b.setAttribute("aria-label", k);
+      setTimeout(() => { say(k); stars(...centre(b)); }, 350);
+    });
+    return b;
+  }));
+}
+document.getElementById("revAgain").addEventListener("click", revDeal);
+revDeal();
+
+// ---- step 3: TV time — rice and egg cards to point at while the song plays ----
+document.getElementById("tvCards").replaceChildren(...["rice", "egg"].map(k => {
+  const c = card(k);
+  c.addEventListener("click", () => { say(k); stars(...centre(c)); });
+  return c;
+}));
+
+// ---- step 4: Mimi's Choice — the group taps the food it likes ----
+const choiceCards = document.getElementById("choiceCards");
+const choiceText = document.getElementById("choiceText");
+function choiceDeal() {
+  choiceText.innerHTML = "What do you <b>like?</b>";
+  choiceCards.replaceChildren(...shuffle(ALL).map(k => {
+    const c = card(k);
+    c.addEventListener("click", () => {
+      choiceCards.querySelectorAll(".card").forEach(x => x.classList.toggle("pick", x === c));
+      // the sentence stays on screen: with no sound the teacher reads it
+      choiceText.innerHTML = `${likeHtml(k)} Yummy!`;
+      say(`I like ${TOYS[k].like}!`); stars(...centre(c));
+    });
+    return c;
+  }));
+}
+document.getElementById("choiceSay").addEventListener("click", () => {
+  const k = choiceCards.querySelector(".pick")?.getAttribute("aria-label");
+  say(k ? `I like ${TOYS[k].like}!` : "What do you like?");
+});
+document.getElementById("choiceAgain").addEventListener("click", choiceDeal);
+choiceDeal();
+
+// ---- step 5: Food Shop — a group buys 2 foods ("I like milk, please."), then eats them ----
+const shopText = document.getElementById("shopText");
+const cartItems = document.getElementById("cartItems");
+const cartBasket = document.getElementById("cartBasket");
+const shopEat = document.getElementById("shopEat");
+let cart = [], lastSaid = null;
+function shopDeal() {
+  cart = []; lastSaid = null; shopEat.disabled = true;
+  cartItems.classList.remove("eaten"); cartItems.replaceChildren();
+  shopText.innerHTML = "Welcome to the <b>Food Shop!</b>";
+  const mix = shuffle(ALL);
+  [["shop1", mix.slice(0, 4)], ["shop2", mix.slice(4)]].forEach(([id, foods]) => {
+    document.getElementById(id).replaceChildren(...foods.map(k => {
+      const c = card(k);
+      c.addEventListener("click", () => {
+        if (cart.length >= 2 || c.classList.contains("sold")) return;
+        cart.push(k); c.classList.add("sold");
+        lastSaid = `I like ${TOYS[k].like}, please.`;
+        shopText.innerHTML = `I like <b>${TOYS[k].like}</b>, please.`;
+        say(lastSaid);
+        fly(TOYS[k].img, c.querySelector("img"), cartBasket, 0.4);
+        setTimeout(() => {
+          const im = new Image(); im.src = TOYS[k].img; im.alt = k; cartItems.appendChild(im);
+          if (cart.length === 2) shopEat.disabled = false;
+        }, 1100);
+      });
+      return c;
+    }));
+  });
+}
+shopEat.addEventListener("click", () => {
+  if (cart.length < 2) return;
+  shopEat.disabled = true;
+  cartItems.classList.add("eaten");
+  shopText.innerHTML = `${cart.map(k => `<b>${TOYS[k].like}</b>`).join(" and ")}… <b>Yummy!</b>`;
+  lastSaid = "Yummy!"; say("Yummy!"); praise("Yummy!"); stars(...centre(cartBasket));
+});
+document.getElementById("shopSay").addEventListener("click", () => { if (lastSaid) say(lastSaid); });
+document.getElementById("shopNext").addEventListener("click", shopDeal);
+shopDeal();
+
+// ---- step 6: sum up — tap a food to show the sentence (no voice: the class answers) ----
+const sumAns = document.getElementById("sumAns");
+document.getElementById("sumCards").replaceChildren(...ALL.map(k => {
+  const c = card(k);
+  c.addEventListener("click", () => {
+    document.querySelectorAll("#sumCards .card").forEach(x => x.classList.toggle("pick", x === c));
+    sumAns.innerHTML = likeHtml(k).replace("<b>", '<span class="c-pink">').replace("</b>", "</span>") + " Yummy!";
+    sumAns.classList.remove("reveal"); void sumAns.offsetWidth; sumAns.classList.add("reveal");
+    stars(...centre(c));
+  });
+  return c;
+}));
+
+function onStep(id) {}
+// ---- navigation ----
+const stepsNav = document.getElementById("steps");
+stepsNav.innerHTML = STEPS.map((s, i) => `<button class="step" type="button" data-i="${i}"><b>${i + 1}</b>${s.label}</button>`).join("")
+  + `<span class="voice-warn" id="voiceWarn" hidden>TV không phát được tiếng: cô đọc giúp nhé</span>`
+  + `<div class="tools"><button class="tool" id="soundTest" type="button">🔊 <span>Thử loa</span></button><button class="tool" id="full" type="button">⛶ <span>Toàn màn hình</span></button></div>`;
+let cur = 0;
+function go(i) {
+  cur = Math.max(0, Math.min(STEPS.length - 1, i));
+  if (synth) synth.cancel();
+  player.pause();
+  onStep(STEPS[cur].id);
+  document.querySelectorAll(".scene").forEach(s => s.hidden = s.dataset.step !== STEPS[cur].id);
+  stepsNav.querySelectorAll(".step").forEach((b, j) => b.setAttribute("aria-current", j === cur ? "true" : "false"));
+  stepsNav.querySelector(`[data-i="${cur}"]`).scrollIntoView({ inline: "nearest", block: "nearest" });
+  document.getElementById("note").innerHTML = STEPS[cur].note;
+  document.getElementById("prev").disabled = cur === 0;
+  document.getElementById("next").disabled = cur === STEPS.length - 1;
+  try { localStorage.setItem(STORE_KEY, cur); } catch (e) {}
+}
+stepsNav.addEventListener("click", e => { const b = e.target.closest(".step"); if (b) go(+b.dataset.i); });
+document.getElementById("prev").addEventListener("click", () => go(cur - 1));
+document.getElementById("next").addEventListener("click", () => go(cur + 1));
+document.addEventListener("keydown", e => {
+  if (e.key === "ArrowRight" || e.key === "PageDown") go(cur + 1);
+  if (e.key === "ArrowLeft" || e.key === "PageUp") go(cur - 1);
+});
+document.getElementById("full").addEventListener("click", () => {
+  const d = document.documentElement;
+  (document.fullscreenElement ? document.exitFullscreen() : d.requestFullscreen?.())?.catch?.(() => {});
+});
+// keep the TV awake during class
+async function wake() { try { await navigator.wakeLock?.request("screen"); } catch (e) {} }
+document.addEventListener("click", wake, { once: true });
+
+if (synth) { pickVoice(); synth.addEventListener?.("voiceschanged", pickVoice); setTimeout(pickVoice, 1500); }
+// "Thử loa": first a beep (browser sound), then a recorded word
+document.getElementById("soundTest").addEventListener("click", () => { beep(); setTimeout(() => say("rice"), 600); });
+document.addEventListener("click", () => { try { ctx(); } catch (e) {} }, { once: true });
+
+let start = 0;
+try { start = +(localStorage.getItem(STORE_KEY) || 0); } catch (e) {}
+go(start);
+</script>
+
+</body></html>
